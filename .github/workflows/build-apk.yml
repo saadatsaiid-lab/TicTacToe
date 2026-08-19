@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -46,11 +46,23 @@ jobs:
           python -m pip install buildozer
           python -m pip install "cython<3"
 
+      - name: Check environment
+        run: |
+          python --version
+          java -version
+          buildozer --version
+
       - name: Build APK
         run: |
           buildozer -v android debug
 
+      - name: Find APK
+        if: success()
+        run: |
+          find . -type f -name "*.apk" -print
+
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: TicTacToe-APK
